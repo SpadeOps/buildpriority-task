@@ -1,0 +1,29 @@
+{
+  "name": "az_build_priority",
+  "version": "1.0.0",
+  "description": "Dedicated task to change jobs priorities for build and release pipelines",
+  "scripts": {
+    "build": "tfx extension create --manifest-globs vss-extension.json"
+  },
+  "homepage": "https://github.com/SpadeOps/buildpriority-task#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpadeOps/buildpriority-task.git"
+  },
+  "keywords": [
+    "priority",
+    "task",
+    "pipeline",
+    "job",
+    "stage",
+    "build",
+    "prioritization"
+  ],
+  "author": "Clément Picq",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.12.7",
+    "@types/q": "^1.5.8",
+    "azure-pipelines-task-lib": "^4.11.0"
+  }
+}

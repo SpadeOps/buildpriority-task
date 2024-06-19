@@ -1,0 +1,51 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+jobs:
+- job: priorization_script
+  pool:
+    vmImage: windows-latest #No bootleneck, it will run on an different agent
+
+  steps:
+  - task: PowerShell@2
+    displayName: 'Priorization script'
+    inputs:
+      targetType: 'filePath'
+      filePath: "Priorization.ps1"
+      arguments: >
+        -OrganizationUri "$(System.CollectionUri)"
+        -BuildId "$(Build.BuildId)"
+        -JobNameList @("priorized_job")
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- job: priorized_job
+  pool:
+    name: Default
+    demands: Bottleneck
+
+  steps:
+  - script: echo This run is Priorized!
+    displayName: 'This run is Priorized'
+
+  - powershell: |
+      Start-Sleep -Seconds 20
+    displayName: 'Add 30 seconds delay'
+
+- job: unpriorized_job
+  dependsOn: priorized_job
+  pool:
+    name: Default
+    demands: Bottleneck
+
+  steps:
+  - script: echo This run is unPriorized!
+    displayName: 'This run is unPriorized'
+
+  - powershell: |
+      Start-Sleep -Seconds 20
+    displayName: 'Add 30 seconds delay'

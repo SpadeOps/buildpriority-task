@@ -1,0 +1,80 @@
+{
+    "id": "886bc99b-edcc-4350-ab7e-bffe4a37ed70",
+    "name": "BuildPriority",
+    "friendlyName": "Change Build priority",
+    "description": "Dedicated task to change jobs priorities for build and release pipelines",
+    "author": "Clément Picq",
+    "helpMarkDown": "[Learn more about this task](https://github.com/spadeops/buildpriority-task/blob/master/README.md)",
+    "category": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "runsOn": [
+        "Agent"
+    ],
+    "version": {
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 4
+    },
+    "instanceNameFormat": "Change Build priority: $(method)",
+    "groups": [
+        {
+            "name": "completionOptions",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "input_OrganizationUri",
+            "type": "string",
+            "label": "Organization URI",
+            "defaultValue": "$(System.CollectionUri)",
+            "required": true,
+            "helpMarkDown": "Complete URI for your Organization (ex: https://dev.azure.com/Fabrikam)."
+        },
+        {
+            "name": "input_BuildId",
+            "type": "string",
+            "label": "Build ID",
+            "defaultValue": "$(Build.BuildId)",
+            "required": true,
+            "helpMarkDown": "Build ID or Release deployment ID from which you want to change priority."
+        },
+        {
+            "name": "input_JobNameList",
+            "type": "string",
+            "label": "Job names list",
+            "defaultValue": "",
+            "groupName": "completionOptions",
+            "required": false,
+            "helpMarkDown": "List of job names that will be prioritized, separated with a comma. If no job names are given, all jobs of the build will be prioritized."
+        },
+        {
+            "name": "input_PoolIdList",
+            "type": "string",
+            "label": "Agent Pool IDs list",
+            "defaultValue": "",
+            "groupName": "completionOptions",
+            "required": false,
+            "helpMarkDown": "List of all Agent Pools that need to be investigated, separated with a comma. This value is only for optimization purpose. If no Pool IDs are given, all Agent Pool IDs will be investigated."
+        },
+        {
+            "name": "input_Depth",
+            "type": "int",
+            "label": "Depth",
+            "defaultValue": "50",
+            "groupName": "completionOptions",
+            "required": false,
+            "helpMarkDown": "Depth for the search of JobRequests. This value is only for optimization purpose. We will only look for the first {Depth} job request of the Agent Pool."
+        }
+    ],
+    
+    "execution": {
+        "PowerShell3": {
+            "target": "Prioritization.ps1"
+        }
+    }
+}

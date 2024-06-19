@@ -1,0 +1,76 @@
+{
+    "manifestVersion": 1,
+    "id": "BuildPriority",
+    "name": "Build Priority",
+    "version": "1.0.4",
+    "public": false,
+    "publisher": "CPICQ-SpadeOps",
+    "targets": [
+      {
+        "id": "Microsoft.VisualStudio.Services"
+      }
+    ],
+    "description": "Task to change queue priority of a build/release",
+    "categories": [
+      "Azure Pipelines"
+    ],
+    "tags": [
+        "priority",
+        "task",
+        "pipeline",
+        "job",
+        "stage",
+        "build",
+        "prioritization"
+    ],
+    "links": {
+      "support": {
+        "uri": "https://github.com/SpadeOps/buildpriority-task/issues"
+      }
+    },
+    "icons": {
+      "default": "images/icon.png"
+    },
+    "branding": {
+      "color": "#6F42C1",
+      "theme": "dark"
+    },
+    "screenshots": [
+      {
+        "path": "images/screenshot01.png"
+      }
+    ],
+    "repository": {
+      "type": "git",
+      "uri": "git+https://github.com/SpadeOps/buildpriority-task.git"
+    },
+    "content": {
+      "details": {
+        "path": "README.md"
+      },
+      "license": {
+        "path": "LICENSE"
+      }
+    },
+    "files": [
+      {
+        "path": "tasks"
+      },
+      {
+        "path": "images",
+        "addressable": true
+      }
+    ],
+    "contributions": [
+      {
+        "id": "buildpriority-task",
+        "type": "ms.vss-distributed-task.task",
+        "targets": [
+          "ms.vss-distributed-task.tasks"
+        ],
+        "properties": {
+          "name": "tasks"
+        }
+      }
+    ]
+  }
