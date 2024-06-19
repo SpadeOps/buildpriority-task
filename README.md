@@ -1,5 +1,5 @@
 # BuildPriority
-[![isc license](https://img.shields.io/badge/license-ISC-green)](https://github.com/SpadeOps/buildpriority-task/blob/main/LICENSE)
+[![mit license](https://img.shields.io/badge/license-MIT-green)](https://github.com/SpadeOps/buildpriority-task/blob/main/LICENSE)
 
 This Azure Pipelines task prioritize specifics jobs of a pipeline. It will loop through all pools (if none given) and through all Job request still in queue.
 It will do the exact same thing as the ![RunNext.png](https://github.com/SpadeOps/buildpriority-task/blob/main/images/RunNext.png) button of a pipeline.
