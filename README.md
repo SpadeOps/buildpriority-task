@@ -1,8 +1,8 @@
 # BuildPriority
-[![mit license](https://img.shields.io/badge/license-MIT-green)](https://github.com/SpadeOps/buildpriority-task/blob/main/LICENSE)
+[![mit license](https://img.shields.io/badge/license-MIT-green)](https://github.com/SpadeOps/buildpriority-task/blob/main/LICENSE)  [![website](https://img.shields.io/badge/site-SpadeOps-blue)](https://www.spadeops.com/)
 
 This Azure Pipelines task prioritize specifics jobs of a pipeline. It will loop through all pools (if none given) and through all Job request still in queue.
-It will do the exact same thing as the ![RunNext.png](https://github.com/SpadeOps/buildpriority-task/blob/main/images/RunNext.png) button of a pipeline.
+It will do the exact same thing as the ![RunNext.png](images/RunNext.png) button of a pipeline.
 If any JobRequests are started by the given Pipeline, the task will increase its priority. Possibility to restrict prioritization to only specific given JobNames.
 
 ## Usage
@@ -63,7 +63,7 @@ If any JobRequests are started by the given Pipeline, the task will increase its
 
 ### Output
 Simple log for all jobs prioritized
-![screenshoot](https://github.com/SpadeOps/buildpriority-task/blob/main/images/screenshot01.png)
+![screenshoot](images/screenshot01.png)
 
 ### Powershell Script
 The task call a Powershell script, using the [VSTS Task SDK for PowerShell](https://github.com/microsoft/azure-pipelines-task-lib/blob/master/powershell/Docs/README.md). [The script](https://github.com/SpadeOps/buildpriority-task/blob/main/tasks/Prioritization.ps1) is intended to work both as an agent task or in a local powershell console. You can use it as you wish.
@@ -156,10 +156,10 @@ In this case, we will run the job _Prioritization_script_ (and thus, the _BuildP
 ## Useful Informations
 
 ### Prioritization job condition
-To be prioritized, a job need to be in queue ![queued.png](https://github.com/SpadeOps/buildpriority-task/blob/main/images/queued.png) and waiting for an available pipeline. 
+To be prioritized, a job need to be in queue ![queued.png](images/queued.png) and waiting for an available pipeline. 
 It won't work if the job is :
-- Started ![started.png](https://github.com/SpadeOps/buildpriority-task/blob/main/images/started.png) 
-- pending for an other job to finish ![pending.png](https://github.com/SpadeOps/buildpriority-task/blob/main/images/pending.png) 
+- Started ![started.png](images/started.png) 
+- pending for an other job to finish ![pending.png](images/pending.png) 
 - Or any other state (not sarted, succeeded, canceled, failed...)
 
 ### Multiple priority order
@@ -174,3 +174,8 @@ You can rework the [powershell script](https://github.com/SpadeOps/buildpriority
 That way there is 2 possible way to call it : 
  - Inside your pipeline, use the Agentless task <i>"Invoke REST API"</i> to call your Azure Function.
  - You can use the embedded [Azure Web Hooks](https://learn.microsoft.com/en-us/azure/devops/service-hooks/services/webhooks?view=azure-devops) to automate the call of your Azure Function at each deployment start.
+
+## About Us
+[SpadeOps](https://www.spadeops.com/) is a company dedicated to find new solutions for collaborative work with Azure, Azure DevOps and associated DevOps tools.
+We offer Scripts and Extensions based on Azure and Azure DevOps REST API services to improve your everyday experiences on those platforms.
+If you want to get updated on our futur release, you can go to our [WebPage](https://www.spadeops.com/).

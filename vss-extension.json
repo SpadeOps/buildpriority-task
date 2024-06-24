@@ -2,8 +2,8 @@
     "manifestVersion": 1,
     "id": "BuildPriority",
     "name": "Build Priority",
-    "version": "1.0.4",
-    "public": false,
+    "version": "1.0.3",
+    "public": true,
     "publisher": "CPICQ-SpadeOps",
     "targets": [
       {

@@ -11,15 +11,13 @@ jobs:
     vmImage: windows-latest #No bootleneck, it will run on an different agent
 
   steps:
-  - task: PowerShell@2
+  - task: BuildPriority@1
     displayName: 'Priorization script'
     inputs:
-      targetType: 'filePath'
-      filePath: "Priorization.ps1"
-      arguments: >
-        -OrganizationUri "$(System.CollectionUri)"
-        -BuildId "$(Build.BuildId)"
-        -JobNameList @("priorized_job")
+      input_OrganizationUri: '$(System.CollectionUri)'
+      input_BuildId: '$(Build.BuildId)'
+      input_PoolIdList: '1'
+      input_JobNameList: '"priorized_job","other_potential_jobname"'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
