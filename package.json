@@ -1,6 +1,6 @@
 {
   "name": "az_build_priority",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dedicated task to change jobs priorities for build and release pipelines",
   "scripts": {
     "build": "tfx extension create --manifest-globs vss-extension.json"
@@ -17,7 +17,9 @@
     "job",
     "stage",
     "build",
-    "prioritization"
+    "prioritization",
+    "Function",
+    "Azure"
   ],
   "author": "Clément Picq",
   "license": "MIT",

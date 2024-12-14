@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "BuildPriority",
     "name": "Build Priority",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "public": true,
     "publisher": "CPICQ-SpadeOps",
     "targets": [
@@ -26,6 +26,9 @@
     "links": {
       "support": {
         "uri": "https://github.com/SpadeOps/buildpriority-task/issues"
+      },
+      "privacypolicy": {
+        "uri": "PRIVACY"
       }
     },
     "icons": {

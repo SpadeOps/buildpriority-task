@@ -4,7 +4,9 @@
 This Azure Pipelines task prioritize specifics jobs of a pipeline. It will loop through all pools (if none given) and through all Job request still in queue.
 It will do the exact same thing as the ![RunNext.png](images/RunNext.png) button of a pipeline.
 If any JobRequests are started by the given Pipeline, the task will increase its priority. Possibility to restrict prioritization to only specific given JobNames.
+To offer a more convenient usage in your workflow, we also want to propose an alternative [agentless solution](#agentless-solution) that doesn't use an extension, but use a call to an Azure function instead.
 
+# Agent based task solution
 ## Usage
 ### Inputs
 ```yaml
@@ -128,11 +130,11 @@ For each Pools found {
 }
 ```
 
-## Token Access
+## Access Token 
 The task use a [Personal Access Token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows#use-a-pat) as an environment variable of the pipeline. You can use directly the [pipeline PAT](https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#systemaccesstoken), or any other PAT passed as a secret variable.
 The PAT need to be scoped to give the read and manage right to the pool you want to work on. It does not need to be all of your agent pools. Only the pools that the PAT can access to will be used in the task.
 If you want to use the inherited pipeline PAT, you need to change the right of this pipeline to the pool agent :
-https://dev.azure.com/{SpadeOps}/_settings/agentpools?poolId={PoolID}&view=security 
+https://dev.azure.com/{OrganizationName}/_settings/agentpools?poolId={PoolID}&view=security 
 The user used by the pipeline is usually _{ProjectName} Build Service ({OrganizationName})_ 
 
 ## Branch restriction
@@ -165,15 +167,61 @@ It won't work if the job is :
 ### Multiple priority order
 Prioritization works as a LIFO. Any new prioritization will be put in first position in the queue, even if an other job have been prioritized before.  
 
-## Workaround
-Because of the need to run a powershell script, this task need an agent to run (VM azure or hosted agent). It can't run on an agentless Job. 
+# Agentless solution
+Because of the need to run a powershell script, this task extension need an agent to run (VM azure or hosted agent). It can't run on an agentless Job. 
 For a more flexible process, we will propose some workaround to achieve the same goal without the work of an agent :
 
-### Azure function or Local server
-You can rework the [powershell script](https://github.com/SpadeOps/buildpriority-task/blob/main/tasks/Prioritization.ps1) to use it has an [Azure function](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-powershell) or even on a local server. It then make it easier to call it in an agentless job.
-That way there is 2 possible way to call it : 
- - Inside your pipeline, use the Agentless task <i>"Invoke REST API"</i> to call your Azure Function.
+## Azure function or Local server
+You can use an alterated [powershell script](https://github.com/SpadeOps/buildpriority-task/blob/main/script/AzureFunctionPrioritization.ps1) to use it has an [Azure function](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-powershell) or even on a local server. It then make it easier to call it in an agentless job.
+That way there is 2 possibility to call the script : 
+ - Inside your pipeline, use the Agentless task <i>"Invoke Azure Function"</i> to call your Azure Function.
  - You can use the embedded [Azure Web Hooks](https://learn.microsoft.com/en-us/azure/devops/service-hooks/services/webhooks?view=azure-devops) to automate the call of your Azure Function at each deployment start.
+For the rest of document, we will focus on how to install it and make it work on an Azure Function.
+
+## Create your Azure function
+You can follow this [Microsoft Learn guide](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-vs-code-powershell) to create an Azure Function dedicated to the prioritization of your tasks. You can then use the code of this [powershell script](https://github.com/SpadeOps/buildpriority-task/blob/main/script/AzureFunctionPrioritization.ps1) for the execution of your function.
+However, we would like to recommend you of some changes to make, which seem important to us :
+
+### Change the Authorization level for the call
+We strongly recommend protecting your Azure function from whoever can call on it outside the desired framework. Thus, we recommand to avoid using anonymous authorization and use function authorization level. You can do this directly at creation time, or by modifying the function.json configuration file previously generated when creating the Azure function.
+To now access your function, you will just need add the [access Key](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to?tabs=azure-portal#get-your-function-access-keys) to the URL or the Header of your Request.
+
+### Add ressource for Application Insights Logs
+To have a better experience when analyzing and debugging your function, we also recommend creating an Azure resource for setting up the [Application Insights Logs](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data). 
+Any informations or errors occurring during the execution of the script will also be reported in the Application Insights Logs and can be analyzed afterward :
+![normalCase.png](images/normalCase.png) 
+![errorCase.png](images/errorCase.png) 
+
+## Call the Function inside your Pipeline
+The call to the Azure function remains essentially the same as that used for the task extension. We use the same parameters as described [previously](#inputs). You can find a complete example of a working YAML file in the repository.
+```yaml
+jobs:
+- ${{ if eq(variables['Build.SourceBranchName'], 'main') }}: #Optionnal restriction on the branch
+  - job: priorization_script
+    pool:
+      name: server #No bootleneck, it's an agentless task
+    steps:
+    - task: AzureFunction@1
+      inputs:
+        function: 'https://<APP_NAME>.azurewebsites.net/api/<FUNCTION_NAME>'
+        key: '<API_KEY>'
+        method: 'POST'
+        headers: |
+          {
+          "Content-Type":"application/json"
+          }
+        body: |
+          {
+          "OrganizationUri": "$(system.CollectionUri)", 
+          "BuildId": "$(Build.BuildId)", 
+          "JobNameList":"priorized_job,other_potential_jobname",
+          "PoolIdList":"1"
+          "Depth":"50", 
+          "AuthToken": "$(system.AccessToken)"
+          }
+        waitForCompletion: 'false'
+```
+In addition, we also use the same PAT system as described above to be able to interact with the agent poll. If your Pipeline does not have sufficient access to interact with the pools, an error is reported
 
 ## About Us
 [SpadeOps](https://www.spadeops.com/) is a company dedicated to find new solutions for collaborative work with Azure, Azure DevOps and associated DevOps tools.

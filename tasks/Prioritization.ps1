@@ -58,7 +58,7 @@ try {
         }
     }
     if($PoolIdList.Count -eq 0) {
-        Write-Error ("[ERROR] Your SYSTEM_ACCESSTOKEN have no, access to any Pools")
+        Write-Error ("[ERROR] Your SYSTEM_ACCESSTOKEN doesn't have access to any agent Pool")
         Exit 1
     }
 

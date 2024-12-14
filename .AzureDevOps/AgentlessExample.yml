@@ -1,0 +1,54 @@
+
+trigger: none
+
+jobs:
+- ${{ if eq(variables['Build.SourceBranchName'], 'main') }}: #Optionnal restriction on the branch
+  - job: priorization_script
+    pool:
+      name: server #No bootleneck, it's an agentless task
+    steps:
+    - task: AzureFunction@1
+      inputs:
+        function: 'https://<APP_NAME>.azurewebsites.net/api/<FUNCTION_NAME>'
+        key: '<API_KEY>'
+        method: 'POST'
+        headers: |
+          {
+          "Content-Type":"application/json"
+          }
+        body: |
+          {
+          "OrganizationUri": "$(system.CollectionUri)", 
+          "BuildId": "$(Build.BuildId)", 
+          "JobNameList":"priorized_job,other_potential_jobname", 
+          "Depth":"50", 
+          "AuthToken": "$(system.AccessToken)"
+          }
+        waitForCompletion: 'false'
+
+- job: priorized_job
+  pool:
+    name: Default
+    demands: Bottleneck
+
+  steps:
+  - script: echo This run is Priorized!
+    displayName: 'This run is Priorized'
+
+  - powershell: |
+      Start-Sleep -Seconds 20
+    displayName: 'Add 30 seconds delay'
+
+- job: unpriorized_job
+  dependsOn: priorized_job
+  pool:
+    name: Default
+    demands: Bottleneck
+
+  steps:
+  - script: echo This run is unPriorized!
+    displayName: 'This run is unPriorized'
+
+  - powershell: |
+      Start-Sleep -Seconds 20
+    displayName: 'Add 30 seconds delay'
